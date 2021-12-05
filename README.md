@@ -1,7 +1,10 @@
 # [EN] Telegram Antispam Bot
 Simple bot deletes all messages with URLs  
 Also bot has Whitelist of telegram's nicknames that allowed to send URLs  
-Whitelist is here: `Settings.cs`
+Whitelist is here: `Settings.cs`  
+
+Based on .NET 6  
+Using https://github.com/TelegramBots/Telegram.Bot as a .NET Client for Telegram Bot API.
 
 # [RU] Антиспам telegram-бот
 Это простой бот, который удаляет все сообщения, содержащие ссылки.  
