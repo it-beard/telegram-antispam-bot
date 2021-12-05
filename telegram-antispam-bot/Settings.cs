@@ -10,5 +10,5 @@ public class Settings
 
     public static string InfoMessage =
         "Если ты хочешь отправлять ссылки в комментариях канала АйТиБорода, " +
-        "то заходи в репозиторий и вноси себя в WhiteList (файл Settings.cs)";
+        "то заходи в репозиторий github.com/it-beard/telegram-antispam-bot и вноси себя в WhiteList (подробнее читай в файле README.md репозитория)";
 }
