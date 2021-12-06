@@ -11,7 +11,6 @@ Using https://github.com/TelegramBots/Telegram.Bot as a .NET Client for Telegram
 Для того, чтобы бот работал, его необходимо добавить в администраторы чата в TG.  
 
 У бота есть настраиваемый белый список пользователей, которым разрешено писать сообщения со ссылками.
-Also bot have Whitelist of telegram's nicknames that allowed to send URLs  
 Белый список находится в файле: `Settings.cs`.
 
 Этот бот работает как спам-фильтр в telegram-канале [АйТиБорода](https://t.me/itbeard)  
