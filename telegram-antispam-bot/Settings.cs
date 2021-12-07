@@ -7,7 +7,7 @@ public class Settings
     {
         "iamitbeard",
         "SergShadow",
-	"andreyolegovichru"
+        "andreyolegovichru"
     };
 
     public static readonly string InfoMessage =
