@@ -6,7 +6,8 @@ public class Settings
     public static readonly List<string> WhiteList = new()
     {
         "iamitbeard",
-        "SergShadow"
+        "SergShadow",
+	"lparziva1l"
     };
 
     public static readonly string InfoMessage =
