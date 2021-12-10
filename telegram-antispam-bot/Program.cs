@@ -4,7 +4,7 @@ using Telegram.Bot.Extensions.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-var botClient = new TelegramBotClient(Environment.GetEnvironmentVariable("TelegramAntispamBotKey"));
+var botClient = new TelegramBotClient(Environment.GetEnvironmentVariable("TELEGRAM_ANTISPAM_BOT_KEY"));
 using var cts = new CancellationTokenSource();
 
 botClient.StartReceiving(
