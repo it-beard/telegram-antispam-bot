@@ -7,7 +7,11 @@ public class Settings
     {
         "iamitbeard",
         "SergShadow",
-	"lparziva1l"
+	      "lparziva1l",
+        "andreyolegovichru",
+        "pilotInspektor",
+        "igotodev",
+        "Victor_BD"
     };
 
     public static readonly string InfoMessage =
