@@ -7,6 +7,7 @@ public class Settings
     {
         "iamitbeard",
         "SergShadow",
+        "igotodev",
         "Victor_BD"
     };
 
