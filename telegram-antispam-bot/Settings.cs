@@ -7,6 +7,7 @@ public class Settings
     {
         "iamitbeard",
         "SergShadow",
+        "andreyolegovichru",
         "pilotInspektor",
         "igotodev",
         "Victor_BD"
