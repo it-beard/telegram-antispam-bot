@@ -7,11 +7,8 @@ public class Settings
     {
         "iamitbeard",
         "SergShadow",
-        
-        
-        
-        
-        "igotodev"
+        "igotodev",
+        "Victor_BD"
     };
 
     public static readonly string InfoMessage =
