@@ -23,11 +23,11 @@ jobs:
       
     - name: Build WebJob
       run: dotnet build --no-restore --configuration Release
-      working-directory: Site/Itbeard.Site.WebAssembly
+      working-directory: telegram-antispam-bot
       
     - name: Publish Site
       run: dotnet publish -c Release -o './publish/App_Data/Jobs/Continuous/TelegramAntispamBot' 
-      working-directory: Site/Itbeard.Site.WebAssembly
+      working-directory: telegram-antispam-bot
       
     - name: 'Deploy Site to Azure WebApp'
       uses: azure/webapps-deploy@v2
