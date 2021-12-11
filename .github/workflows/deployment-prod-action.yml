@@ -33,6 +33,7 @@ jobs:
       with:
         filename: '${{env.ZIP_FILE}}'
         workingDirectory: ${{env.ZIP_PATH}}
+        exclusions: 'worker.exe app_data/**/unix/*' # skip .exe and Unix runtime as deployment will be to a Windows App Service
           
     - name: Deploy to Production (master branch)
       uses: srijken/azure-zip-deploy@v1.0.1
