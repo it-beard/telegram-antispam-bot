@@ -3,7 +3,12 @@ name: Deploy app to Production
 on:
   push:
     branches: [ main ]
-
+env:
+  BINARIES: './output/app_data/jobs/continuous/TelegramAntispamBot' # the last folder name will become the webjob name in the portal
+  ZIP_FILE: 'webjob.zip'
+  ZIP_PATH: './output'
+  ZIP_FILEPATH: './output/webjob.zip'
+  
 jobs:
   build-and-deploy-site:
     name: Deploy WebJob
@@ -18,20 +23,19 @@ jobs:
         dotnet-version: 6.0.x
       
     - name: Restore dependencies
-      run: dotnet restore
-      working-directory: telegram-antispam-bot
+      run: dotnet restore telegram-antispam-bot.sln
       
     - name: Build WebJob
-      run: dotnet build --no-restore --configuration Release
-      working-directory: telegram-antispam-bot
-      
-    - name: Publish Site
-      run: |
-        dotnet publish -c Release -o './publish/App_Data/Jobs/Triggered/TelegramAntispamBot' telegram-antispam-bot
-      
-    - name: 'Deploy Site to Azure WebApp'
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: ${{ env.AZURE_WEBAPP_NAME }}
-        publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
-        package: './publish'
+      run: dotnet build telegram-antispam-bot.sln --configuration Release --no-restore --output ${{env.BINARIES}}
+
+    - name: Zip
+        uses: nguyenquyhy/zip-release@v0.3.0
+        with:
+          filename: '${{env.ZIP_FILE}}'
+          workingDirectory: ${{env.ZIP_PATH}}
+          
+    - name: Deploy to Production (master branch)
+        uses: srijken/azure-zip-deploy@v1.0.1
+        with:
+          zip-file: ${{env.ZIP_FILEPATH}}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
