@@ -4,10 +4,10 @@ on:
   push:
     branches: [ main ]
 env:
-  BINARIES: './output/app_data/jobs/continuous/TelegramAntispamBot' # the last folder name will become the webjob name in the portal
+  BINARIES: './publish/App_Data/Jobs/Triggered/TelegramAntispamBot' # the last folder name will become the webjob name in the portal
   ZIP_FILE: 'webjob.zip'
-  ZIP_PATH: './output'
-  ZIP_FILEPATH: './output/webjob.zip'
+  ZIP_PATH: './publish'
+  ZIP_FILEPATH: './publish/webjob.zip'
   
 jobs:
   build-and-deploy-site:
