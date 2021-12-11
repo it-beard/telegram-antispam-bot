@@ -2,6 +2,8 @@ namespace TelegramAntispam.Bot;
 
 public class Settings
 {
+    public static string NoCommentWord = "#advert";
+    
     //Add your telegram nickname here
     public static readonly List<string> WhiteList = new()
     {

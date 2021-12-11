@@ -28,6 +28,18 @@ async Task HandleUpdateAsync(
 {
     try
     {
+        // do not delete messages from "channel" user type
+        if (update.Message != null && update.Message.From.IsChannel())
+        {
+            // Comments are disabled if channel message contains NoCommentWord
+            if (update.Message.Text.Contains(Settings.NoCommentWord))
+            {
+                await DeleteMessageAsync(botClient, update.Message, cancellationToken);
+            }
+            
+            return;
+        }
+        
         switch (update.Type)
         {
             case UpdateType.Message when update.Message.ContainsUrls() && 
@@ -66,7 +78,7 @@ async Task DeleteMessageAsync(
 
     await botClient.DeleteMessageAsync(chatId, messageId, cancellationToken);
 
-    if (message.From != null)
+    if (message.From is {Username: { }})
     {
         await botClient.SendTextMessageAsync(message.From.Id, Settings.InfoMessage);
     }
