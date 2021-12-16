@@ -21,4 +21,10 @@ public static class Extensions
     {
         return user is {FirstName: "Telegram"};
     }
+
+    public static bool HasEmptyMessage(this Update update)
+    {
+        return update.Type == UpdateType.Message && update.Message?.Text == null ||
+               update.Type == UpdateType.EditedMessage && update.EditedMessage?.Text == null;
+    }
 }
