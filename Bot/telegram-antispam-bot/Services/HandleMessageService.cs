@@ -1,3 +1,4 @@
+using System.Text;
 using Newtonsoft.Json;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -22,6 +23,7 @@ public class HandleMessageService : IHandleMessageService
     {
         try
         {
+            Console.OutputEncoding = Encoding.UTF8;
             Console.WriteLine($"Message log: {JsonConvert.SerializeObject(update)}");
             if (update.HasEmptyMessage())
             {

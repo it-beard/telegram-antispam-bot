@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Moq;
 using Telegram.Bot;
