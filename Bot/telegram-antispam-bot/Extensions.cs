@@ -8,7 +8,9 @@ public static class Extensions
     public static bool ContainsUrls(this Message message)
     {
         return message is {Entities: { }} 
-               && message.Entities.Select(e => e.Type).Contains(MessageEntityType.Url);
+                && message.Entities.Select(e => e.Type).Contains(MessageEntityType.Url) ||
+               message is {CaptionEntities: { }} 
+                && message.CaptionEntities.Select(e => e.Type).Contains(MessageEntityType.Url);
     }
     
     public static bool InWhitelist(this User user)
@@ -24,7 +26,12 @@ public static class Extensions
 
     public static bool HasEmptyMessage(this Update update)
     {
-        return update.Type == UpdateType.Message && update.Message?.Text == null ||
-               update.Type == UpdateType.EditedMessage && update.EditedMessage?.Text == null;
+        return 
+            update.Type == UpdateType.Message && 
+                update.Message?.Text == null && 
+                update.Message?.Caption == null ||
+            update.Type == UpdateType.EditedMessage && 
+                update.EditedMessage?.Text == null && 
+                update.EditedMessage?.Caption == null;
     }
 }
