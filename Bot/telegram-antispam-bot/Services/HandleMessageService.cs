@@ -25,8 +25,6 @@ public class HandleMessageService : IHandleMessageService
             {
                 return;
             }
-
-            var olol = update.EditedMessage.ContainsUrls();
         
             switch (type)
             {
