@@ -19,6 +19,12 @@ public static class Extensions
                Settings.WhiteList.Any(w => user.Username.ToLower().Contains(w.ToLower()));
     }
     
+    public static bool InChannelsWhitelist(this Chat chat)
+    {
+        return chat is {Username: { }}  && 
+               Settings.ChannelsWhiteList.Any(w => chat.Username.ToLower().Contains(w.ToLower()));
+    }
+    
     public static bool IsChannel(this User user)
     {
         return user is {FirstName: "Telegram"};

@@ -22,7 +22,7 @@ public class HandleUpdateAsyncTests
     }
     
     [Fact]
-    public void IfEmptyMessage_DeleteNotCalled()
+    public void IfEmptyMessage_Skip()
     {
         //Arrange
         var updateType = It.IsAny<UpdateType>();
@@ -37,34 +37,9 @@ public class HandleUpdateAsyncTests
             m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
             Times.Never);
     }
-    
+
     [Fact]
-    public void IUpdateTypeIsMessageAndFromChannel_DeleteNotCalled()
-    {
-        //Arrange
-        var update = new Update
-        {
-            Message = new Message
-            {
-                From = new User
-                {
-                    FirstName = "Telegram"
-                }
-            }
-        };
-        var service = new Services.HandleMessageService(deleteMessageService.Object);
-        
-        //Act
-        service.HandleUpdateAsync(botClient.Object, update, UpdateType.Message, cancellationToken);
-        
-        //Assert
-        deleteMessageService.Verify(m => 
-            m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
-            Times.Never);
-    }
-    
-    [Fact]
-    public void IUpdateTypeIsEditedMessageAndFromChannel_DeleteNotCalled()
+    public void IfEditedMessageFromOwnChannel_Skip()
     {
         //Arrange
         var update = new Update
@@ -81,6 +56,31 @@ public class HandleUpdateAsyncTests
         
         //Act
         service.HandleUpdateAsync(botClient.Object, update, UpdateType.EditedMessage, cancellationToken);
+        
+        //Assert
+        deleteMessageService.Verify(m => 
+                m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
+            Times.Never);
+    }
+    
+    [Fact]
+    public void IfMessageFromChannel_Skip()
+    {
+        //Arrange
+        var update = new Update
+        {
+            Message = new Message
+            {
+                From = new User
+                {
+                    FirstName = "Telegram"
+                }
+            }
+        };
+        var service = new Services.HandleMessageService(deleteMessageService.Object);
+        
+        //Act
+        service.HandleUpdateAsync(botClient.Object, update, UpdateType.Message, cancellationToken);
         
         //Assert
         deleteMessageService.Verify(m => 
@@ -89,41 +89,7 @@ public class HandleUpdateAsyncTests
     }
 
     [Fact]
-    public void IUpdateTypeIsMessageAndNotFromChannelAndUserInWhiteListAndContainsUrl_DeleteNotCalled()
-    {
-        //Arrange
-        var update = new Update
-        {
-            Message = new Message
-            {
-                From = new User
-                {
-                    FirstName = "testUserName",
-                    Username = Settings.WhiteList[0]
-                },
-                Text = $"Test message with word {Settings.NoCommentWord}",
-                Entities = new []
-                {
-                    new MessageEntity
-                    {
-                        Type = MessageEntityType.Url
-                    }
-                }
-            }
-        };
-        var service = new Services.HandleMessageService(deleteMessageService.Object);
-        
-        //Act
-        service.HandleUpdateAsync(botClient.Object, update, UpdateType.Message, cancellationToken);
-        
-        //Assert
-        deleteMessageService.Verify(m => 
-            m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
-            Times.Never);
-    }
-    
-    [Fact]
-    public void IUpdateTypeIsEditedMessageAndNotFromChannelAndUserInWhiteListAndContainsUrl_DeleteNotCalled()
+    public void IfEditedMessageWithLinkFromUserInWhiteList_Skip()
     {
         //Arrange
         var update = new Update
@@ -133,7 +99,8 @@ public class HandleUpdateAsyncTests
                 From = new User
                 {
                     FirstName = "testUserName",
-                    Username = Settings.WhiteList[0]
+                    Username = Settings.WhiteList[0],
+                    IsBot = false
                 },
                 Text = $"Test message with word {Settings.NoCommentWord}",
                 Entities = new []
@@ -157,33 +124,7 @@ public class HandleUpdateAsyncTests
     }
     
     [Fact]
-    public void IUpdateTypeIsMessageAndFromChannelAndContainsNoCommentWord_DeleteCalledOnce()
-    {
-        //Arrange
-        var update = new Update
-        {
-            Message = new Message
-            {
-                From = new User
-                {
-                    FirstName = "Telegram"
-                },
-                Text = $"Test message with word {Settings.NoCommentWord}"
-            }
-        };
-        var service = new Services.HandleMessageService(deleteMessageService.Object);
-        
-        //Act
-        service.HandleUpdateAsync(botClient.Object, update, UpdateType.Message, cancellationToken);
-        
-        //Assert
-        deleteMessageService.Verify(m => 
-            m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
-            Times.Once);
-    }
-    
-    [Fact]
-    public void IUpdateTypeIsMessageAndNotFromChannelAndUserNotInWhiteListAndContainsUrl_DeleteCalledOnce()
+    public void IfMessageWithLinkFromUserInWhiteList_Skip()
     {
         //Arrange
         var update = new Update
@@ -193,7 +134,7 @@ public class HandleUpdateAsyncTests
                 From = new User
                 {
                     FirstName = "testUserName",
-                    Username = "notInWhiteListUserName"
+                    Username = Settings.WhiteList[0]
                 },
                 Text = $"Test message with word {Settings.NoCommentWord}",
                 Entities = new []
@@ -212,13 +153,12 @@ public class HandleUpdateAsyncTests
         
         //Assert
         deleteMessageService.Verify(m => 
-            m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
-            Times.Once);
+                m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
+            Times.Never);
     }
-    
-        
+
     [Fact]
-    public void IUpdateTypeIsEditedMessageAndFromChannelAndContainsNoCommentWord_DeleteCalledOnce()
+    public void IfEditedMessageWithNoCommentWordFromOwnChannel_Delete()
     {
         //Arrange
         var update = new Update
@@ -244,7 +184,33 @@ public class HandleUpdateAsyncTests
     }
     
     [Fact]
-    public void IUpdateTypeIsEditedMessageAndNotFromChannelAndUserNotInWhiteListAndContainsUrl_DeleteCalledOnce()
+    public void IsMessageWithNoCommentWordFromOwnChannel_Delete()
+    {
+        //Arrange
+        var update = new Update
+        {
+            Message = new Message
+            {
+                From = new User
+                {
+                    FirstName = "Telegram"
+                },
+                Text = $"Test message with word {Settings.NoCommentWord}"
+            }
+        };
+        var service = new Services.HandleMessageService(deleteMessageService.Object);
+        
+        //Act
+        service.HandleUpdateAsync(botClient.Object, update, UpdateType.Message, cancellationToken);
+        
+        //Assert
+        deleteMessageService.Verify(m => 
+                m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+    
+    [Fact]
+    public void IfEditedMessageWithLinkFromUserNotInWhiteList_Delete()
     {
         //Arrange
         var update = new Update
@@ -254,7 +220,8 @@ public class HandleUpdateAsyncTests
                 From = new User
                 {
                     FirstName = "testUserName",
-                    Username = "notInWhiteListUserName"
+                    Username = "notInWhiteListUserName",
+                    IsBot = false
                 },
                 Text = $"Test message with word {Settings.NoCommentWord}",
                 Entities = new []
@@ -278,7 +245,42 @@ public class HandleUpdateAsyncTests
     }
     
     [Fact]
-    public void IUpdateTypeIsEditedMessageAndNotFromChannelAndUserNotInWhiteListAndContainsUrlInCaption_DeleteCalledOnce()
+    public void IfMessageWithLinkFromUserNotInWhiteList_Delete()
+    {
+        //Arrange
+        var update = new Update
+        {
+            Message = new Message
+            {
+                From = new User
+                {
+                    FirstName = "testUserName",
+                    Username = "notInWhiteListUserName",
+                    IsBot = false
+                },
+                Text = $"Test message with word {Settings.NoCommentWord}",
+                Entities = new []
+                {
+                    new MessageEntity
+                    {
+                        Type = MessageEntityType.Url
+                    }
+                }
+            }
+        };
+        var service = new Services.HandleMessageService(deleteMessageService.Object);
+        
+        //Act
+        service.HandleUpdateAsync(botClient.Object, update, UpdateType.Message, cancellationToken);
+        
+        //Assert
+        deleteMessageService.Verify(m => 
+                m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+    
+    [Fact]
+    public void IfEditedMessageWithLinkInCaptionFromUserNotInWhiteList_Delete()
     {
         //Arrange
         var update = new Update
@@ -288,7 +290,8 @@ public class HandleUpdateAsyncTests
                 From = new User
                 {
                     FirstName = "testUserName",
-                    Username = "notInWhiteListUserName"
+                    Username = "notInWhiteListUserName",
+                    IsBot = false
                 },
                 Text = $"Test message with word {Settings.NoCommentWord}",
                 CaptionEntities = new []
@@ -304,6 +307,101 @@ public class HandleUpdateAsyncTests
         
         //Act
         service.HandleUpdateAsync(botClient.Object, update, UpdateType.EditedMessage, cancellationToken);
+        
+        //Assert
+        deleteMessageService.Verify(m => 
+                m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+    
+    [Fact]
+    public void IfMessageWithLinkInCaptionFromUserNotInWhiteList_Delete()
+    {
+        //Arrange
+        var update = new Update
+        {
+            Message = new Message
+            {
+                From = new User
+                {
+                    FirstName = "testUserName",
+                    Username = "notInWhiteListUserName",
+                    IsBot = false
+                },
+                Text = $"Test message with word {Settings.NoCommentWord}",
+                CaptionEntities = new []
+                {
+                    new MessageEntity
+                    {
+                        Type = MessageEntityType.Url
+                    }
+                }
+            }
+        };
+        var service = new Services.HandleMessageService(deleteMessageService.Object);
+        
+        //Act
+        service.HandleUpdateAsync(botClient.Object, update, UpdateType.Message, cancellationToken);
+        
+        //Assert
+        deleteMessageService.Verify(m => 
+                m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+    
+    [Fact]
+    public void IfEditedMessageFromChannelNotInWhiteList_Delete()
+    {
+        //Arrange
+        var update = new Update
+        {
+            EditedMessage = new Message
+            {
+                Text = "example text",
+                From = new User
+                {
+                    IsBot = true
+                },
+                SenderChat = new Chat()
+                {
+                    Username = "channelNotFromChannelsWhiteList"
+                }
+            }
+        };
+        var service = new Services.HandleMessageService(deleteMessageService.Object);
+        
+        //Act
+        service.HandleUpdateAsync(botClient.Object, update, UpdateType.EditedMessage, cancellationToken);
+        
+        //Assert
+        deleteMessageService.Verify(m => 
+                m.DeleteMessageAsync(It.IsAny<ITelegramBotClient>(), It.IsAny<Message>(), It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+    
+    [Fact]
+    public void IfMessageFromChannelNotInWhiteList_Delete()
+    {
+        //Arrange
+        var update = new Update
+        {
+            Message = new Message
+            {
+                Text = "example text",
+                From = new User
+                {
+                    IsBot = true
+                },
+                SenderChat = new Chat()
+                {
+                    Username = "channelNotFromChannelsWhiteList"
+                }
+            }
+        };
+        var service = new Services.HandleMessageService(deleteMessageService.Object);
+        
+        //Act
+        service.HandleUpdateAsync(botClient.Object, update, UpdateType.Message, cancellationToken);
         
         //Assert
         deleteMessageService.Verify(m => 

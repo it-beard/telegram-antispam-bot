@@ -15,6 +15,12 @@ public class Settings
         "igotodev",
         "Victor_BD"
     };
+    
+    //Channels which are allowed to send messages to chat
+    public static readonly List<string> ChannelsWhiteList = new()
+    {
+        "itbeard"
+    };
 
     public static readonly string InfoMessage =
         "Если ты хочешь отправлять ссылки в комментариях канала АйТиБорода, " +

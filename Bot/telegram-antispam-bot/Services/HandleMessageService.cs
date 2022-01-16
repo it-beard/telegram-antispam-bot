@@ -23,8 +23,6 @@ public class HandleMessageService : IHandleMessageService
     {
         try
         {
-            Console.OutputEncoding = Encoding.UTF8;
-            Console.WriteLine($"Message log: {JsonConvert.SerializeObject(update)}");
             if (update.HasEmptyMessage())
             {
                 return;
@@ -37,8 +35,12 @@ public class HandleMessageService : IHandleMessageService
                                              update.Message.Text.Contains(Settings.NoCommentWord):
                 // Delete new comment with link if user not in white-list
                 case UpdateType.Message when update.Message.ContainsUrls() && 
+                                             !update.Message.From.IsBot &&
                                              !update.Message.From.IsChannel() &&
                                              !update.Message.From.InWhitelist():
+                // Delete new community-comment if user not in white-list
+                case UpdateType.Message when update.Message.From.IsBot && 
+                                             !update.Message.SenderChat.InChannelsWhitelist():
                     await deleteMessageService.DeleteMessageAsync(botClient, update.Message, cancellationToken);
                     break;
                 // Disable comments if edited post contains no-comment word
@@ -46,8 +48,12 @@ public class HandleMessageService : IHandleMessageService
                                                    update.EditedMessage.Text.Contains(Settings.NoCommentWord):
                 // Delete edited comment with link if user not in white-list
                 case UpdateType.EditedMessage when update.EditedMessage.ContainsUrls() && 
+                                                   !update.EditedMessage.From.IsBot && 
                                                    !update.EditedMessage.From.IsChannel() &&
                                                    !update.EditedMessage.From.InWhitelist():
+                // Delete edited community-comment if user not in white-list
+                case UpdateType.EditedMessage when update.EditedMessage.From.IsBot && 
+                                                   !update.EditedMessage.SenderChat.InChannelsWhitelist():
                     await deleteMessageService.DeleteMessageAsync(botClient, update.EditedMessage, cancellationToken);
                     break;
                 default:
